@@ -8,10 +8,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(OctavePerlinNoiseSampler.class)
 public class FarlandsPatchUndoer {
-    @Inject(method = "maintainPrecision", at = @At("TAIL"), cancellable = true)
+    private static final double FARLANDS_PRECISION = 5.3406656E1;
+
+    @Inject(method = "maintainPrecision", at = @At("HEAD"), cancellable = true)
     private static void injectMethod(double value, CallbackInfoReturnable<Double> cir) {
-        double newValue = value;
-        cir.cancel();
-        cir.setReturnValue(newValue);
+        cir.setReturnValue(value - (double) net.minecraft.util.math.MathHelper.lfloor(value / FARLANDS_PRECISION + 0.5) * FARLANDS_PRECISION);
     }
 }
